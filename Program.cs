@@ -2,97 +2,139 @@
 
 namespace Std
 {
-    public class halfplane
+    public class Halfplane
     {
-        protected double a1, a2, b;
-        public halfplane() { }
-        public halfplane(double a1, double a2, double b)
+        private double _a1, _a2, _b;
+
+        public double A1
         {
-            this.a1 = a1;
-            this.a2 = a2;
-            this.b = b;
+            get => _a1;
+            protected set => _a1 = value;
         }
+
+        public double A2
+        {
+            get => _a2;
+            protected set => _a2 = value;
+        }
+
+        public double B
+        {
+            get => _b;
+            protected set => _b = value;
+        }
+
+        public Halfplane() { }
+
+        public Halfplane(double a1, double a2, double b)
+        {
+            A1 = a1;
+            A2 = a2;
+            B = b;
+        }
+
         public virtual void SetCoefficients(double a1, double a2, double b)
         {
-            this.a1 = a1;
-            this.a2 = a2;
-            this.b = b;
+            A1 = a1;
+            A2 = a2;
+            B = b;
         }
+
         public virtual void PrintCoefficients()
         {
-            Console.WriteLine($"Рівняння півплощини: {a1} * x1 + {a2} * x2 <= {b}");
+            Console.WriteLine($"Halfplane: {A1} * x1 + {A2} * x2 <= {B}");
         }
+
         public bool ContainsPoint(double x1, double x2)
         {
-            double leftSide = a1 * x1 + a2 * x2;
-            return leftSide <= b;
+            double leftSide = A1 * x1 + A2 * x2;
+            return leftSide <= B;
         }
     }
-    public class Pivprostir : halfplane
+
+    public class Halfspace : Halfplane
     {
-                private double a3;
+        private double _a3;
 
-        public Pivprostir() { }
-
-        public Pivprostir(double a1, double a2, double a3, double b)
-            : base(a1, a2, b)
+        public double A3
         {
-            this.a3 = a3;
+            get => _a3;
+            protected set => _a3 = value;
         }
 
-        public void SetCoefficients(double a1, double a2, double a3, double b)
+        public Halfspace() { }
+
+        public Halfspace(double a1, double a2, double a3, double b)
+            : base(a1, a2, b)
         {
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.b = b;
+            A3 = a3;
+        }
+
+        public new void SetCoefficients(double a1, double a2, double a3, double b)
+        {
+            A1 = a1;
+            A2 = a2;
+            A3 = a3;
+            B = b;
         }
 
         public override void PrintCoefficients()
         {
-            Console.WriteLine($"Півпростір: {a1} * x1 + {a2} * x2 + {a3} * x3 <= {b}");
+            Console.WriteLine($"Halfspace: {A1} * x1 + {A2} * x2 + {A3} * x3 <= {B}");
         }
 
         public bool ContainsPoint(double x1, double x2, double x3)
         {
-            return a1 * x1 + a2 * x2 + a3 * x3 <= b;
+            return A1 * x1 + A2 * x2 + A3 * x3 <= B;
         }
     }
     class Program
     {
         static void Main()
         {
-            halfplane p = new halfplane();
+            Halfplane p = new Halfplane();
 
-            Console.Write("Введіть a1: ");
-            double a1 = double.Parse(Console.ReadLine() ?? "0");
+            Console.Write("Enter a1: ");
+            double a1 = ReadDouble();
 
-            Console.Write("Введіть a2: ");
-            double a2 = double.Parse(Console.ReadLine() ?? "0");
+            Console.Write("Enter a2: ");
+            double a2 = ReadDouble();
 
-            Console.Write("Введіть b: ");
-            double b = double.Parse(Console.ReadLine() ?? "0");
+            Console.Write("Enter b: ");
+            double b = ReadDouble();
 
             p.SetCoefficients(a1, a2, b);
             p.PrintCoefficients();
 
-            Console.WriteLine("\nВведіть координати точки:");
+            Console.WriteLine("\nEnter point coordinates:");
             Console.Write("x1 = ");
-            double x1 = double.Parse(Console.ReadLine() ?? "0");
+            double x1 = ReadDouble();
+
             Console.Write("x2 = ");
-            double x2 = double.Parse(Console.ReadLine() ?? "0");
+            double x2 = ReadDouble();
 
-            if (p.ContainsPoint(x1, x2))
-                Console.WriteLine("Точка належить півплощині.");
-            else
-                Console.WriteLine("Точка не належить півплощині.");
+            Console.WriteLine(p.ContainsPoint(x1, x2)
+                ? "The point belongs to the halfplane."
+                : "The point does not belong to the halfplane.");
 
-                Console.WriteLine("\n=== Перевірка півпростору ===");
-            Pivprostir space = new Pivprostir(1, 2, 3, 10);
+            Console.WriteLine("\n=== Halfspace test ===");
+            Halfspace space = new Halfspace(1, 2, 3, 10);
             space.PrintCoefficients();
             Console.WriteLine(space.ContainsPoint(1, 1, 1)
-                ? "Точка належить півпростору."
-                : "Точка не належить півпростору.");
+                ? "The point belongs to the halfspace."
+                : "The point does not belong to the halfspace.");
+        }
+
+        static double ReadDouble()
+        {
+            while (true)
+            {
+                string? input = Console.ReadLine();
+                if (double.TryParse(input, out double result))
+                    return result;
+
+                Console.Write("Invalid input. Please enter a number: ");
+            }
         }
     }
 }
