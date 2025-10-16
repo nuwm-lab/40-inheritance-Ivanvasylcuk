@@ -1,94 +1,98 @@
 ﻿using System;
 
-namespace Geometry
+namespace Std
 {
-    // Клас для півплощини a1*x1 + a2*x2 <= b
-    class HalfPlane
+    public class halfplane
     {
         protected double a1, a2, b;
-
-        // Метод для задання коефіцієнтів
+        public halfplane() { }
+        public halfplane(double a1, double a2, double b)
+        {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.b = b;
+        }
         public virtual void SetCoefficients(double a1, double a2, double b)
         {
             this.a1 = a1;
             this.a2 = a2;
             this.b = b;
         }
-
-        // Метод для виведення коефіцієнтів
-        public virtual void DisplayCoefficients()
+        public virtual void PrintCoefficients()
         {
-            Console.WriteLine($"Півплощина: {a1}*x1 + {a2}*x2 <= {b}");
+            Console.WriteLine($"Рівняння півплощини: {a1} * x1 + {a2} * x2 <= {b}");
         }
-
-        // Метод для перевірки, чи належить точка півплощині
-        public virtual bool ContainsPoint(double x1, double x2)
+        public bool ContainsPoint(double x1, double x2)
         {
-            return a1 * x1 + a2 * x2 <= b;
+            double leftSide = a1 * x1 + a2 * x2;
+            return leftSide <= b;
         }
     }
-
-    // Похідний клас для півпростору a1*x1 + a2*x2 + a3*x3 <= b
-    class HalfSpace : HalfPlane
+    public class Pivprostir : halfplane
     {
-        private double a3;
+                private double a3;
 
-        // Перевантаження методу для задання коефіцієнтів
-        public void SetCoefficients(double a1, double a2, double a3, double b)
+        public Pivprostir() { }
+
+        public Pivprostir(double a1, double a2, double a3, double b)
+            : base(a1, a2, b)
         {
-            base.SetCoefficients(a1, a2, b);
             this.a3 = a3;
         }
 
-        // Перевантаження методу для виведення коефіцієнтів
-        public void DisplayCoefficients3D()
+        public void SetCoefficients(double a1, double a2, double a3, double b)
         {
-            Console.WriteLine($"Півпростір: {a1}*x1 + {a2}*x2 + {a3}*x3 <= {b}");
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+            this.b = b;
         }
 
-        // Перевантаження методу для перевірки точки
+        public override void PrintCoefficients()
+        {
+            Console.WriteLine($"Півпростір: {a1} * x1 + {a2} * x2 + {a3} * x3 <= {b}");
+        }
+
         public bool ContainsPoint(double x1, double x2, double x3)
         {
             return a1 * x1 + a2 * x2 + a3 * x3 <= b;
         }
     }
-
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            // Створюємо об'єкт півплощини
-            HalfPlane hp = new HalfPlane();
-            hp.SetCoefficients(2, 3, 12);
-            hp.DisplayCoefficients();
+            halfplane p = new halfplane();
 
-            Console.Write("Введіть координати точки x1, x2 через пробіл: ");
-            string[] input2D = Console.ReadLine().Split();
-            double x1_2D = double.Parse(input2D[0]);
-            double x2_2D = double.Parse(input2D[1]);
+            Console.Write("Введіть a1: ");
+            double a1 = double.Parse(Console.ReadLine() ?? "0");
 
-            if (hp.ContainsPoint(x1_2D, x2_2D))
+            Console.Write("Введіть a2: ");
+            double a2 = double.Parse(Console.ReadLine() ?? "0");
+
+            Console.Write("Введіть b: ");
+            double b = double.Parse(Console.ReadLine() ?? "0");
+
+            p.SetCoefficients(a1, a2, b);
+            p.PrintCoefficients();
+
+            Console.WriteLine("\nВведіть координати точки:");
+            Console.Write("x1 = ");
+            double x1 = double.Parse(Console.ReadLine() ?? "0");
+            Console.Write("x2 = ");
+            double x2 = double.Parse(Console.ReadLine() ?? "0");
+
+            if (p.ContainsPoint(x1, x2))
                 Console.WriteLine("Точка належить півплощині.");
             else
                 Console.WriteLine("Точка не належить півплощині.");
 
-            Console.WriteLine();
-
-            // Створюємо об'єкт півпростору
-            HalfSpace hs = new HalfSpace();
-            hs.SetCoefficients(1, 2, 3, 10);
-            hs.DisplayCoefficients3D();
-
-            Console.Write("Введіть координати точки x1, x2, x3 через пробіл: ");
-            string[] input3D = Console.ReadLine().Split();
-            double x1_3D = double.Parse(input3D[0]);
-            double x2_3D = double.Parse(input3D[1]);
-            double x3_3D = double.Parse(input3D[2]);
-
-            if (hs.ContainsPoint(x1_3D, x2_3D, x3_3D))
-                Console.WriteLine("Точка належить півпростору.");
-            else
-                Console.WriteLine("Точка не належить півпростору.");
+                Console.WriteLine("\n=== Перевірка півпростору ===");
+            Pivprostir space = new Pivprostir(1, 2, 3, 10);
+            space.PrintCoefficients();
+            Console.WriteLine(space.ContainsPoint(1, 1, 1)
+                ? "Точка належить півпростору."
+                : "Точка не належить півпростору.");
         }
     }
 }
