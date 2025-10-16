@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Std
 {
@@ -33,6 +34,11 @@ namespace Std
             B = b;
         }
 
+        ~Halfplane()
+        {
+
+        }
+
         public virtual void SetCoefficients(double a1, double a2, double b)
         {
             A1 = a1;
@@ -40,9 +46,9 @@ namespace Std
             B = b;
         }
 
-        public virtual void PrintCoefficients()
+        public override string ToString()
         {
-            Console.WriteLine($"Halfplane: {A1} * x1 + {A2} * x2 <= {B}");
+            return $"Halfplane: {A1} * x1 + {A2} * x2 <= {B}";
         }
 
         public bool ContainsPoint(double x1, double x2)
@@ -70,17 +76,15 @@ namespace Std
             A3 = a3;
         }
 
-        public new void SetCoefficients(double a1, double a2, double a3, double b)
+        public void SetCoefficients(double a1, double a2, double a3, double b)
         {
-            A1 = a1;
-            A2 = a2;
+            base.SetCoefficients(a1, a2, b);
             A3 = a3;
-            B = b;
         }
 
-        public override void PrintCoefficients()
+        public override string ToString()
         {
-            Console.WriteLine($"Halfspace: {A1} * x1 + {A2} * x2 + {A3} * x3 <= {B}");
+            return $"Halfspace: {A1} * x1 + {A2} * x2 + {A3} * x3 <= {B}";
         }
 
         public bool ContainsPoint(double x1, double x2, double x3)
@@ -88,10 +92,14 @@ namespace Std
             return A1 * x1 + A2 * x2 + A3 * x3 <= B;
         }
     }
-    class Program
+
+    internal static class Program
     {
         static void Main()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine("=== 2D Halfplane Test ===");
+
             Halfplane p = new Halfplane();
 
             Console.Write("Enter a1: ");
@@ -104,7 +112,7 @@ namespace Std
             double b = ReadDouble();
 
             p.SetCoefficients(a1, a2, b);
-            p.PrintCoefficients();
+            Console.WriteLine(p);
 
             Console.WriteLine("\nEnter point coordinates:");
             Console.Write("x1 = ");
@@ -117,9 +125,11 @@ namespace Std
                 ? "The point belongs to the halfplane."
                 : "The point does not belong to the halfplane.");
 
-            Console.WriteLine("\n=== Halfspace test ===");
+            Console.WriteLine("\n=== 3D Halfspace Test ===");
+
             Halfspace space = new Halfspace(1, 2, 3, 10);
-            space.PrintCoefficients();
+            Console.WriteLine(space);
+
             Console.WriteLine(space.ContainsPoint(1, 1, 1)
                 ? "The point belongs to the halfspace."
                 : "The point does not belong to the halfspace.");
@@ -129,8 +139,8 @@ namespace Std
         {
             while (true)
             {
-                string? input = Console.ReadLine();
-                if (double.TryParse(input, out double result))
+                string? input = Console.ReadLine()?.Replace(',', '.');
+                if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double result))
                     return result;
 
                 Console.Write("Invalid input. Please enter a number: ");
